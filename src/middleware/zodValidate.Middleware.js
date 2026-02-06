@@ -22,9 +22,7 @@ return (req, res, next)=>{
     const errors = {};  
     // console.log(result);
     
-    result.error.issues.forEach((issue)=>{
-        
-        
+    result.error.issues.forEach((issue)=>{ 
         errors[issue.path[0]] = issue.message
     })
 

@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import userRouter from './src/routes/user.route.js';
+import outhRouter from './src/routes/outh.route.js';
 import errorMiddleware from './src/middleware/Error.Middlaware.js';
 dotenv.config();
 
@@ -91,7 +91,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
-app.use('/api/v1/users', userRouter);
+app.use('/api/v1/users', outhRouter);
 
 
 // implementing error middleware 

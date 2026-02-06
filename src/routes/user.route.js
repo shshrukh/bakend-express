@@ -1,7 +1,7 @@
-import  { Router } from "express";
-import { registerUser } from "../controllers/user.controller.js";
-import validate from "../middleware/zodValidate.Middleware.js";
-import registerUserScheama from "../schemas/registerUser.js";
+// import  { Router } from "express";
+// import { registerUser } from "../controllers/user.controller.js";
+// import validate from "../middleware/zodValidate.Middleware.js";
+// import registerUserScheama from "../schemas/registerUser.js";
 
 
 // const router = Router();    
@@ -16,10 +16,10 @@ import registerUserScheama from "../schemas/registerUser.js";
 
 // export default router;
 
-const userRouter = Router();
+// const userRouter = Router();
 
 
 
-userRouter.route('/register').post(validate(registerUserScheama) ,registerUser);
+// userRouter.route('/register').post(validate(registerUserScheama) ,registerUser);
 
-export default userRouter
+// export default userRouter

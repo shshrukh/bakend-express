@@ -1,4 +1,6 @@
 import mongoose , { Schema, model } from "mongoose";
+import bcrypt from "bcryptjs";
+import CustomError from '../handler/Error.util.js'
 
 
 const userSchema =  new Schema({
@@ -28,6 +30,22 @@ const userSchema =  new Schema({
     }
 },{timestamps: true})
 
+
+userSchema.pre("save", async function(){
+    try {
+        if(!this.isModified("password")){
+            return next();
+        }
+        this.password = await bcrypt.hash(this.password , 10);
+    } catch (error) {
+        return next(new CustomError(301, "failed to hash password"))
+    }
+})
+
+userSchema.methods.comparePassword =async function (password){
+  const isPasswordCorrect = await bcrypt.compare(password, this.password);
+  return isPasswordCorrect;
+}
 
 const User = model("User", userSchema);
 
