@@ -1,25 +1,14 @@
-// import  { Router } from "express";
-// import { registerUser } from "../controllers/user.controller.js";
-// import validate from "../middleware/zodValidate.Middleware.js";
-// import registerUserScheama from "../schemas/registerUser.js";
+import { Router } from "express";
+import outhMiddlaware from "../middleware/outh.middleware.js";
+import { currenUser } from "../controllers/user.controller.js";
 
 
-// const router = Router();    
-
-// router.get('/profile', (req, res) => {
-//     res.json({
-//         status: 'success',
-//         message: 'User profile data'
-//     });
-// });
-
-
-// export default router;
-
-// const userRouter = Router();
+const userRouter = Router();
 
 
 
-// userRouter.route('/register').post(validate(registerUserScheama) ,registerUser);
+userRouter.route('/current-user').get(outhMiddlaware, currenUser)
 
-// export default userRouter
+
+
+export default userRouter;

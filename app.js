@@ -4,6 +4,8 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import outhRouter from './src/routes/outh.route.js';
 import errorMiddleware from './src/middleware/Error.Middlaware.js';
+import cookieParser from 'cookie-parser';
+import userRouter from './src/routes/user.route.js';
 dotenv.config();
 
 
@@ -89,9 +91,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
+app.use(cookieParser())
 
-
-app.use('/api/v1/users', outhRouter);
+app.use('/api/v1/outh', outhRouter);
+app.use('/api/v1/users', userRouter)
 
 
 // implementing error middleware 
