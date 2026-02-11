@@ -5,6 +5,8 @@ import CustomError from "../handler/Error.util.js";
 import User from "../models/user.model.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/generateTokens.js";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../utils/sendEmail.js";
+import { welcomeEmailTemplate } from "../emailTemplets/welcome.templet.js";
 
 const registerUser = AsyncHandler(async (req, res, next) => {
     const { firstName, lastName, email, password } = req.body;
@@ -18,7 +20,9 @@ const registerUser = AsyncHandler(async (req, res, next) => {
     if (!user) {
         return next(new CustomError(500, "Faild to register user"));
     }
-
+    const userFullName = user.firstName+" "+user.lastName
+    const welcomeTemplet = welcomeEmailTemplate(userFullName, user.email)
+    await sendEmail(user.email, "Welcome To uconnect", welcomeTemplet);
     res.status(301).json({ "success": true, user })
 
 });

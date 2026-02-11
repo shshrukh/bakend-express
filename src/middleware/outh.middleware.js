@@ -17,7 +17,8 @@ const outhMiddlaware = AsyncHandler(async (req, res, next) => {
     }
 
     // decode the token 
-
+    // console.log("working one");
+    
     let decoded;
     try {
         decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
@@ -28,22 +29,26 @@ const outhMiddlaware = AsyncHandler(async (req, res, next) => {
     }
     // checking whether the payload have same information?
     const userID = decoded?.userId;
-
-
+    
+    
     // console.log(userID)
     if (!userID) {
         return next(new CustomError(401, "Invalid access token"))
     }
-
+    
     // db call and get the user
-
-    const user = await User.findById(userID).select('-password -refreshToken');
-    // console.log("DB USERRRRRR" , user)
+    console.log(userID);
+    
+    const user = await User.findById(userID).select('+password');
+    
+    
+    console.log("DB USERRRRRR" , user)
     if (!user) {
         return next(new CustomError(404, "user not found"));
     }
+    // console.log(userID)
     // console.log(user);
-
+    
     req.user = user;
     req.role = user.userRole;
     next();

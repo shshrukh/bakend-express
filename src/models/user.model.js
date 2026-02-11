@@ -39,7 +39,15 @@ const userSchema = new Schema({
             token: { type: String },
             createdAt: { type: Date, default: Date.now() }
         }
-    ]
+    ],
+    forgetPasswordToken: {
+        type: String,
+        default: null
+    },
+    forgetPasswordTokenExpire: {
+        type: Date,
+        default: null
+    }
 }, { timestamps: true })
 
 
