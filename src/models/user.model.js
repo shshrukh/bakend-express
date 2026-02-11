@@ -29,6 +29,11 @@ const userSchema = new Schema({
         required: true,
         minLength: [8, 'password must be more at least eight chars']
     },
+    userRole: {
+        type: String,
+        enum: ["admin", "user"],
+        default: "user"
+    },
     refreshToken: [
         {
             token: { type: String },

@@ -6,6 +6,7 @@ import outhRouter from './src/routes/outh.route.js';
 import errorMiddleware from './src/middleware/Error.Middlaware.js';
 import cookieParser from 'cookie-parser';
 import userRouter from './src/routes/user.route.js';
+import { adminRoute } from './src/routes/admin.route.js';
 dotenv.config();
 
 
@@ -93,8 +94,13 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser())
 
+
+//outh routes
 app.use('/api/v1/outh', outhRouter);
+// user routes
 app.use('/api/v1/users', userRouter)
+// role base route
+app.use('/api/v1/admin', adminRoute)
 
 
 // implementing error middleware 
