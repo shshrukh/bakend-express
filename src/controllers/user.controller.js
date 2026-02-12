@@ -4,13 +4,14 @@ import User from "../models/user.model.js";
 import crypto from "crypto"
 import { sendEmail } from "../utils/sendEmail.js";
 import { resetPasswordEmailTemplate } from "../emailTemplets/resetPassword.templet.js";
+import { success } from "zod";
 
 
-const currenUser = AsyncHandler(async(req, res, next)=>{
-    
+const currenUser = AsyncHandler(async (req, res, next) => {
+
     let user = req.user;
-    console.log(user,"this is current user controller ");
-    
+    console.log(user, "this is current user controller ");
+
     res.status(200).json({
         massage: true,
         data: user
@@ -21,12 +22,12 @@ const currenUser = AsyncHandler(async(req, res, next)=>{
 
 //@ controller
 // change Password
-const changePassword = AsyncHandler(async(req, res, next)=>{
-    const {oldPassword, newPassword} = req.body;
+const changePassword = AsyncHandler(async (req, res, next) => {
+    const { oldPassword, newPassword } = req.body;
     console.log(oldPassword, newPassword);
-    
+
     const user = req.user;
-    if(oldPassword === newPassword){
+    if (oldPassword === newPassword) {
         return next(new CustomError(403, "new password should be different from old passwrod"));
     }
 
@@ -35,8 +36,8 @@ const changePassword = AsyncHandler(async(req, res, next)=>{
 
     const isPasswordCorrect = await user.comparePassword(oldPassword);
 
-    if(!isPasswordCorrect){
-        return next(new CustomError(401, "old password is incorrect")); 
+    if (!isPasswordCorrect) {
+        return next(new CustomError(401, "old password is incorrect"));
     }
 
     user.password = newPassword;
@@ -45,36 +46,73 @@ const changePassword = AsyncHandler(async(req, res, next)=>{
         success: true,
         massage: "password is updated successfuly"
     })
-    
 
-    
+
+
 
 });
 
 //@ controller
 // forget Password
-const forgetPassword = AsyncHandler(async(req, res, next)=>{
-    const {email} = req.body;
-    const user = await User.findOne({email});
-    if(!user){
+const forgetPassword = AsyncHandler(async (req, res, next) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
         return next(new CustomError(403, "user not exist with email"));
     }
 
     const newForgetPasswordToken = crypto.randomBytes(30).toString('hex');
-    const tokenExpireTime = Date.now() + (10*60*60*1000);
+    const tokenExpireTime = Date.now() + (10 * 60 * 60 * 1000);
 
     user.forgetPasswordToken = newForgetPasswordToken;
     user.forgetPasswordTokenExpire = tokenExpireTime;
     await user.save();
-    
+
     // snd the email
-    const userFullName = user.firstName+" "+ user.lastName;
+    const userFullName = user.firstName + " " + user.lastName;
     const forgetPasswordTEmplet = resetPasswordEmailTemplate(userFullName, newForgetPasswordToken)
     await sendEmail(user.email, "reset password", forgetPasswordTEmplet);
     res.status(200).json({
-      success: true,
-      message: "Reset password link send to your gmail, please check your email and reset your password "
-   })
+        success: true,
+        message: "Reset password link send to your gmail, please check your email and reset your password "
+    })
 });
 
-export {currenUser, changePassword, forgetPassword}
+//@controller
+//reset-Password
+const resetPassword = AsyncHandler(async (req, res, next) => {
+    
+    const {token} = req.params;
+    
+    const { password, confirmPassword } = req.body;
+    if (!token) {
+        return next(new CustomError(403, "invalide request for reset password token"));
+    }
+
+    if (password !== confirmPassword) {
+        return next(new CustomError(402, "password and cofirm password should be same"));
+    }
+
+    const userToken = await User.findOne({ forgetPasswordToken: token, forgetPasswordTokenExpire: { $gt: Date.now() } });
+    if (!userToken) {
+        return next(new CustomError(402, "invalid token !"));
+    };
+
+    userToken.password = password;
+    userToken.forgetPasswordToken = null;
+    userToken.forgetPasswordTokenExpire = null;
+
+
+    const updatePassword = await userToken.save()
+    if (updatePassword) {
+        return next(new CustomError(500, "password not updated"));
+    }
+
+    res.status(203).json({
+        success: true,
+        massage: "password is reset successfully"
+    })
+
+});
+
+export { currenUser, changePassword, forgetPassword, resetPassword}
